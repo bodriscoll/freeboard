@@ -23,12 +23,16 @@ public class PingReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String newState = intent.getStringExtra(Constants.NEW_STATE) + " " + new Date();
-        Log.i(TAG, newState);
+        String newState = intent.getStringExtra(Constants.NEW_STATE);
+        Log.d(TAG, newState  + " " + new Date());
 
-        mValues.add(0, newState);
-        ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
+        if (newState.equals("true"))
+            post("Table is now in use");
+        else
+            post("Table is now free");
+    }
 
-        new PostMessageToSlackTask().execute("Sent Message");
+    private void post(String message) {
+        new PostMessageToSlackTask().execute(message);
     }
 }

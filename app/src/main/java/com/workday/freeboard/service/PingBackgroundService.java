@@ -42,7 +42,7 @@ public class PingBackgroundService extends IntentService {
             trimPings(new Date(System.currentTimeMillis() - INACTIVE_WINDOW_MILLIS));
 
             if (clapper.recordClap()) {
-                notifyChange("clap");
+//                notifyChange("clap");
                 Log.i(TAG, "Ping");
                 pings.add(new Date());
 
