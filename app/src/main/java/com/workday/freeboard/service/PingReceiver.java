@@ -25,7 +25,7 @@ public class PingReceiver extends BroadcastReceiver {
         String ping = intent.getStringExtra(Constants.EXTENDED_DATA_STATUS);
         Log.i(TAG, "Ping received: " + ping);
 
-        mValues.add(ping);
+        mValues.add(0, ping);
         ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
 
     }

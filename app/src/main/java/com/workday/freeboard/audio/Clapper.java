@@ -2,6 +2,7 @@ package com.workday.freeboard.audio;
 
 import android.content.Context;
 import android.media.MediaRecorder;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.IOException;
@@ -43,14 +44,13 @@ public class Clapper
 
     private String tmpAudioFile;
 
-    public Clapper() throws IOException
+    public Clapper()
     {
-        this(DEFAULT_CLIP_TIME, "/tmp.3gp", DEFAULT_AMPLITUDE_DIFF, null, null);
+        this(DEFAULT_CLIP_TIME, Environment.getExternalStorageDirectory() + "/tmp.3gp", DEFAULT_AMPLITUDE_DIFF, null, null);
     }
 
     public Clapper(long snipTime, String tmpAudioFile,
                    int amplitudeDifference, Context context, AmplitudeClipListener clipListener)
-            throws IOException
     {
         this.clipTime = snipTime;
         this.clipListener = clipListener;
