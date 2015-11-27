@@ -14,7 +14,7 @@ public class PingReceiver extends BroadcastReceiver {
     private static final String TAG = "PingReceiver";
 
     private List<String> mValues;
-    private ListView listView ;
+    private ListView listView;
 
     public PingReceiver(List<String> mValues, ListView listView) {
         this.mValues = mValues;
@@ -29,5 +29,6 @@ public class PingReceiver extends BroadcastReceiver {
         mValues.add(0, newState);
         ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
 
+        new PostMessageToSlackTask().execute("Sent Message");
     }
 }
