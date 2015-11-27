@@ -7,12 +7,18 @@ import android.util.Log;
 
 import com.workday.freeboard.audio.Clapper;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class PingBackgroundService extends IntentService {
     private static final String TAG = "PingBackgroundService";
     private final Clapper clapper = new Clapper();
+    private boolean inUse;
+    private static final int ACTIVE_WINDOW_MILLIS = 20000;
+    private static final int ACTIVE_PINGS = 3;
+    private static final int INACTIVE_WINDOW_MILLIS = 60000;
+    private List<Date> pings = new ArrayList<>();
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -33,18 +39,60 @@ public class PingBackgroundService extends IntentService {
         String dataString = intent.getDataString();
 
         while (true) {
+            trimPings(new Date(System.currentTimeMillis() - INACTIVE_WINDOW_MILLIS));
+
             if (clapper.recordClap()) {
                 Log.i(TAG, "Ping");
+                pings.add(new Date());
 
-                Intent localIntent =
-                        new Intent(Constants.BROADCAST_ACTION)
-                                // Puts the status into the Intent
-                                .putExtra(Constants.EXTENDED_DATA_STATUS, "Ping at " + new Date());
-                // Broadcasts the Intent to receivers in this app.
-                LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
+                if (hasBecomeActive()) {
+                    notifyChange(true);
+                    inUse = true;
+                }
             } else {
                 Log.d(TAG, "No clap...");
             }
+
+            if (hasBecomeInactive()) {
+                notifyChange(false);
+                inUse = false;
+            }
         }
+    }
+
+    private boolean hasBecomeInactive() {
+        return inUse && pings.size() == 0;
+    }
+
+    private boolean hasBecomeActive() {
+        return !inUse && activePingsInActiveWindow(new Date(System.currentTimeMillis() - ACTIVE_WINDOW_MILLIS));
+    }
+
+    private boolean activePingsInActiveWindow(Date activeThreshold) {
+        int activePings = 0;
+        for (Date ping : pings) {
+            if (ping.after(activeThreshold))
+                activePings++;
+        }
+        return activePings >= ACTIVE_PINGS;
+    }
+
+    private void notifyChange(boolean newState) {
+        Intent localIntent =
+                new Intent(Constants.BROADCAST_ACTION)
+                        // Puts the status into the Intent
+                        .putExtra(Constants.EXTENDED_DATA_STATUS, "Ping at " + new Date())
+                        .putExtra(Constants.NEW_STATE, newState);
+        // Broadcasts the Intent to receivers in this app.
+        LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
+    }
+
+    private void trimPings(Date cutoffTime) {
+        List<Date> deadPings = new ArrayList<>();
+        for (Date ping : pings) {
+            if (ping.before(cutoffTime))
+                deadPings.add(ping);
+        }
+        pings.removeAll(deadPings);
     }
 }

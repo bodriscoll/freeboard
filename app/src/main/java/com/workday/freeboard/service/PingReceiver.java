@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
+import java.util.Date;
 import java.util.List;
 
 public class PingReceiver extends BroadcastReceiver {
@@ -22,10 +23,9 @@ public class PingReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String ping = intent.getStringExtra(Constants.EXTENDED_DATA_STATUS);
-        Log.i(TAG, "Ping received: " + ping);
+        Log.i(TAG, "Ping received: " + intent.getBooleanExtra(Constants.NEW_STATE, false));
 
-        mValues.add(0, ping);
+        mValues.add(0, intent.getBooleanExtra(Constants.NEW_STATE, false)  + " " + new Date());
         ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
 
     }
