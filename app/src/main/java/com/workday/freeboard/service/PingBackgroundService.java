@@ -42,11 +42,12 @@ public class PingBackgroundService extends IntentService {
             trimPings(new Date(System.currentTimeMillis() - INACTIVE_WINDOW_MILLIS));
 
             if (clapper.recordClap()) {
+                notifyChange("clap");
                 Log.i(TAG, "Ping");
                 pings.add(new Date());
 
                 if (hasBecomeActive()) {
-                    notifyChange(true);
+                    notifyChange("true");
                     inUse = true;
                 }
             } else {
@@ -54,7 +55,7 @@ public class PingBackgroundService extends IntentService {
             }
 
             if (hasBecomeInactive()) {
-                notifyChange(false);
+                notifyChange("false");
                 inUse = false;
             }
         }
@@ -77,7 +78,7 @@ public class PingBackgroundService extends IntentService {
         return activePings >= ACTIVE_PINGS;
     }
 
-    private void notifyChange(boolean newState) {
+    private void notifyChange(String newState) {
         Intent localIntent =
                 new Intent(Constants.BROADCAST_ACTION)
                         // Puts the status into the Intent
@@ -88,11 +89,14 @@ public class PingBackgroundService extends IntentService {
     }
 
     private void trimPings(Date cutoffTime) {
+        Log.d(TAG, "Starting trimming, cutoff is " + cutoffTime);
+        Log.d(TAG, "Pings: " + String.valueOf(pings));
         List<Date> deadPings = new ArrayList<>();
         for (Date ping : pings) {
             if (ping.before(cutoffTime))
                 deadPings.add(ping);
         }
+        Log.d(TAG, "Dead pings: " + String.valueOf(deadPings));
         pings.removeAll(deadPings);
     }
 }

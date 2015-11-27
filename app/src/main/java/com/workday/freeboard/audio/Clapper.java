@@ -10,8 +10,7 @@ import java.io.IOException;
 import root.gast.audio.record.AmplitudeClipListener;
 import root.gast.audio.util.AudioUtil;
 
-public class Clapper
-{
+public class Clapper {
     private static final String TAG = "Clapper";
 
     private static final long DEFAULT_CLIP_TIME = 1000;
@@ -44,31 +43,25 @@ public class Clapper
 
     private String tmpAudioFile;
 
-    public Clapper()
-    {
+    public Clapper() {
         this(DEFAULT_CLIP_TIME, Environment.getExternalStorageDirectory() + "/tmp.3gp", DEFAULT_AMPLITUDE_DIFF, null, null);
     }
 
     public Clapper(long snipTime, String tmpAudioFile,
-                   int amplitudeDifference, Context context, AmplitudeClipListener clipListener)
-    {
+                   int amplitudeDifference, Context context, AmplitudeClipListener clipListener) {
         this.clipTime = snipTime;
         this.clipListener = clipListener;
         this.amplitudeThreshold = amplitudeDifference;
         this.tmpAudioFile = tmpAudioFile;
     }
 
-    public boolean recordClap()
-    {
+    public boolean recordClap() {
         Log.d(TAG, "record clap");
         boolean clapDetected = false;
 
-        try
-        {
+        try {
             recorder = AudioUtil.prepareRecorder(tmpAudioFile);
-        }
-        catch (IOException io)
-        {
+        } catch (IOException io) {
             Log.d(TAG, "failed to prepare recorder ", io);
             throw new RecordingFailedException("failed to create recorder", io);
         }
@@ -77,25 +70,21 @@ public class Clapper
         int startAmplitude = recorder.getMaxAmplitude();
         Log.d(TAG, "starting amplitude: " + startAmplitude);
 
-        do
-        {
-            Log.d(TAG, "waiting while recording...");
-            waitSome();
-            int finishAmplitude = recorder.getMaxAmplitude();
-            if (clipListener != null)
-            {
-                clipListener.heard(finishAmplitude);
-            }
+        Log.d(TAG, "waiting while recording...");
+        waitSome();
+        int finishAmplitude = recorder.getMaxAmplitude();
+        if (clipListener != null) {
+            clipListener.heard(finishAmplitude);
+        }
 
-            int ampDifference = finishAmplitude - startAmplitude;
-            if (ampDifference >= amplitudeThreshold)
-            {
-                Log.d(TAG, "heard a clap!");
-                clapDetected = true;
-            }
-            Log.d(TAG, "finishing amplitude: " + finishAmplitude + " diff: "
-                    + ampDifference);
-        } while (continueRecording || !clapDetected);
+        int ampDifference = finishAmplitude - startAmplitude;
+        if (ampDifference >= amplitudeThreshold) {
+            Log.d(TAG, "heard a clap!");
+            clapDetected = true;
+        }
+        Log.d(TAG, "finishing amplitude: " + finishAmplitude + " diff: "
+                + ampDifference);
+
 
         Log.d(TAG, "stopped recording");
         done();
@@ -103,14 +92,11 @@ public class Clapper
         return clapDetected;
     }
 
-    private void waitSome()
-    {
-        try
-        {
+    private void waitSome() {
+        try {
             // wait a while
             Thread.sleep(clipTime);
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             Log.d(TAG, "interrupted");
         }
     }
@@ -118,13 +104,10 @@ public class Clapper
     /**
      * need to call this when completely done with recording
      */
-    public void done()
-    {
+    public void done() {
         Log.d(TAG, "stop recording");
-        if (recorder != null)
-        {
-            if (isRecording())
-            {
+        if (recorder != null) {
+            if (isRecording()) {
                 stopRecording();
             }
             //now stop the media player
@@ -133,13 +116,11 @@ public class Clapper
         }
     }
 
-    public boolean isRecording()
-    {
+    public boolean isRecording() {
         return continueRecording;
     }
 
-    public void stopRecording()
-    {
+    public void stopRecording() {
         continueRecording = false;
     }
 }

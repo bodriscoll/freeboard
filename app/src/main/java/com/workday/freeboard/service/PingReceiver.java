@@ -23,9 +23,10 @@ public class PingReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i(TAG, "Ping received: " + intent.getBooleanExtra(Constants.NEW_STATE, false));
+        String newState = intent.getStringExtra(Constants.NEW_STATE) + " " + new Date();
+        Log.i(TAG, newState);
 
-        mValues.add(0, intent.getBooleanExtra(Constants.NEW_STATE, false)  + " " + new Date());
+        mValues.add(0, newState);
         ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
 
     }
