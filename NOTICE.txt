@@ -1,0 +1,13 @@
+Freeboard! Table Tennis sensor
+Copyright 2015 Brian O'Driscoll
+
+Portions of this codebase were taken from Greg Milette & Adam Stroud's Great Android Sensing Toolkit (GAST)
+    https://github.com/gast-lib/gast-lib
+
+This product contains software developed by Google and shared in the Android
+developer site.
+  http://developer.android.com
+
+The AOA example was derived from the example provided by Google as part of the
+Android developer reference.
+  http://developer.android.com/guide/topics/usb/adk.html
